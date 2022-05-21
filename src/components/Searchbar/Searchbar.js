@@ -1,22 +1,16 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ImSearch } from 'react-icons/im'
 import { toast } from 'react-toastify';
 
-class Searchbar extends Component {
-  state = {
-    query: '',
-  };
+function Searchbar({onSubmit}) {
+  const [query, setQuery] = useState('');
 
-  static propTypes = {
-    onSubmit: PropTypes.func,
-  };
-
-  onSubmitHandler = e => {
+  const onSubmitHandler = e => {
     e.preventDefault();
 
-    const query = this.state.query.trim();
-    if (!query) {
+    const queryTrim = query.trim();
+    if (!queryTrim) {
       toast.error('Plz, enter search query', {
         position: 'top-right',
         autoClose: 2000,
@@ -24,25 +18,18 @@ class Searchbar extends Component {
       return;
     }
 
-    this.props.onSubmit(query);
-    this.reset();
+    onSubmit(queryTrim);
+    setQuery('');
   };
 
-  onInput = e => {
-    const query = e.currentTarget.value;
-    this.setState({ query });
+  const onInput = e => {
+    setQuery(e.currentTarget.value);
+    
   };
 
-  reset = () => {
-    this.setState({ query: '' });
-  };
-
-  render() {
-    const { query } = this.state;
-
-    return (
+   return (
       <header className="Searchbar">
-        <form className="SearchForm" onSubmit={this.onSubmitHandler}>
+        <form className="SearchForm" onSubmit={onSubmitHandler}>
           <button type="submit" className="SearchForm-button">
             <ImSearch style={{ marginRight: 8 }} />
             <span className="SearchForm-button-label">Search</span>
@@ -50,7 +37,7 @@ class Searchbar extends Component {
 
           <input
             className="SearchForm-input"
-            onChange={this.onInput}
+            onChange={onInput}
             type="text"
             autoComplete="off"
             autoFocus
@@ -60,7 +47,12 @@ class Searchbar extends Component {
         </form>
       </header>
     );
-  }
 }
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func,
+};
+
+

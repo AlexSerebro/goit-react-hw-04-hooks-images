@@ -1,46 +1,82 @@
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const modalRoot = document.querySelector('#modal-root');
 
-class Modal extends Component {
-  static propTypes = {
-    tags: PropTypes.string,
-    modalImg: PropTypes.string,
-  };
-
-  componentDidMount() {
-    window.addEventListener('keydown', this.onEscPressHandle);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onEscPressHandle);
-  }
-
-  onBackdropClickHandle = e => {
-    if (e.currentTarget === e.target) {
-      this.props.closeModal();
-    }
-  };
-
-  onEscPressHandle = e => {
+export default function Modal({ tags, modalImg, closeModal }) {
+  useEffect(() => {
+    const onEscPressHandle = e => {
     if (e.code === 'Escape') {
-      this.props.closeModal();
+      closeModal();
+    }
+    };
+     window.addEventListener('keydown', onEscPressHandle);
+
+    return function cleanup() {
+      window.removeEventListener('keydown', onEscPressHandle);
+    };
+  }, [closeModal]);
+    
+   const onBackdropClickHandle = e => {
+    if (e.currentTarget === e.target) {
+      closeModal();
     }
   };
 
-  render() {
-    const { tags, modalImg } = this.props;
     return createPortal(
-      <div className="Overlay" onClick={this.onBackdropClickHandle}>
+      <div className="Overlay" onClick={onBackdropClickHandle}>
         <div className="Modal">
           <img src={modalImg} alt={tags} />
         </div>
       </div>,
       modalRoot,
-    );
-  }
+    )
 }
 
-export default Modal;
+Modal.propTypes = {
+    tags: PropTypes.string,
+  modalImg: PropTypes.string,
+    closeModal: PropTypes.func,
+};
+
+// class Modal extends Component {
+//   static propTypes = {
+//     tags: PropTypes.string,
+//     modalImg: PropTypes.string,
+//   };
+
+//   componentDidMount() {
+//     window.addEventListener('keydown', this.onEscPressHandle);
+//   }
+
+//   componentWillUnmount() {
+//     window.removeEventListener('keydown', this.onEscPressHandle);
+//   }
+
+//   onBackdropClickHandle = e => {
+//     if (e.currentTarget === e.target) {
+//       this.props.closeModal();
+//     }
+//   };
+
+//   onEscPressHandle = e => {
+//     if (e.code === 'Escape') {
+//       this.props.closeModal();
+//     }
+//   };
+
+//   render() {
+//     const { tags, modalImg } = this.props;
+//     return createPortal(
+//       <div className="Overlay" onClick={this.onBackdropClickHandle}>
+//         <div className="Modal">
+//           <img src={modalImg} alt={tags} />
+//         </div>
+//       </div>,
+//       modalRoot,
+//     );
+//   }
+// }
+
+// export default Modal;
